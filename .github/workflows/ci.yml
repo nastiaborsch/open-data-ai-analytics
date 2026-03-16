@@ -41,8 +41,6 @@ jobs:
           - module: visualization
             script: src/visualization.py
 
-    if: ${{ github.event_name != 'workflow_dispatch' || github.event.inputs.module == 'all' || github.event.inputs.module == matrix.module }}
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -59,20 +57,24 @@ jobs:
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
       - name: Create artifact directory
+        if: ${{ github.event_name != 'workflow_dispatch' || github.event.inputs.module == 'all' || github.event.inputs.module == matrix.module }}
         run: mkdir -p artifacts/${{ matrix.module }}
 
       - name: Run script
+        if: ${{ github.event_name != 'workflow_dispatch' || github.event.inputs.module == 'all' || github.event.inputs.module == matrix.module }}
         run: |
           echo "Running ${{ matrix.script }}"
           python ${{ matrix.script }} > artifacts/${{ matrix.module }}/run.log 2>&1
 
       - name: Collect generated reports
+        if: ${{ github.event_name != 'workflow_dispatch' || github.event.inputs.module == 'all' || github.event.inputs.module == matrix.module }}
         run: |
           if [ -d reports ]; then
             cp -r reports artifacts/${{ matrix.module }}/
           fi
 
       - name: Upload artifacts
+        if: ${{ github.event_name != 'workflow_dispatch' || github.event.inputs.module == 'all' || github.event.inputs.module == matrix.module }}
         uses: actions/upload-artifact@v4
         with:
           name: artifacts-${{ matrix.module }}
