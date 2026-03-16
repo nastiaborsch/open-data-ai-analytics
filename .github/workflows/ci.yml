@@ -1,0 +1,79 @@
+name: CI (scripts)
+
+on:
+  push:
+    branches: ["main"]
+
+  pull_request:
+    branches: ["main"]
+
+  workflow_dispatch:
+    inputs:
+      module:
+        description: "Which script to run"
+        required: true
+        default: "all"
+        type: choice
+        options:
+          - all
+          - data_load
+          - data_quality_analysis
+          - data_research
+          - visualization
+
+env:
+  PYTHONUNBUFFERED: "1"
+
+jobs:
+  run-scripts:
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - module: data_load
+            script: src/data_load.py
+          - module: data_quality_analysis
+            script: src/data_quality_analysis.py
+          - module: data_research
+            script: src/data_research.py
+          - module: visualization
+            script: src/visualization.py
+
+    if: ${{ github.event_name != 'workflow_dispatch' || github.event.inputs.module == 'all' || github.event.inputs.module == matrix.module }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+
+      - name: Create artifact directory
+        run: mkdir -p artifacts/${{ matrix.module }}
+
+      - name: Run script
+        run: |
+          echo "Running ${{ matrix.script }}"
+          python ${{ matrix.script }} > artifacts/${{ matrix.module }}/run.log 2>&1
+
+      - name: Collect generated reports
+        run: |
+          if [ -d reports ]; then
+            cp -r reports artifacts/${{ matrix.module }}/
+          fi
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: artifacts-${{ matrix.module }}
+          path: artifacts/${{ matrix.module }}

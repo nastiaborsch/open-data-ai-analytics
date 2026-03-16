@@ -5,6 +5,9 @@ __pycache__/
 .env
 
 data/raw/
+!data/
+!data/raw/
+!data/raw/measurements_sample.csv
 
 *.pyc
 .DS_Store
