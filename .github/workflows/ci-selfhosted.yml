@@ -15,29 +15,29 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Check local Python
-        shell: pwsh
+        shell: powershell
         run: |
           python --version
           pip --version
 
       - name: Install dependencies
-        shell: pwsh
+        shell: powershell
         run: |
           python -m pip install --upgrade pip
           if (Test-Path requirements.txt) { pip install -r requirements.txt }
 
       - name: Create artifact directory
-        shell: pwsh
+        shell: powershell
         run: |
           New-Item -ItemType Directory -Force -Path artifacts/data_quality_analysis | Out-Null
 
       - name: Run module on self-hosted runner
-        shell: pwsh
+        shell: powershell
         run: |
           python src/data_quality_analysis.py > artifacts/data_quality_analysis/run.log 2>&1
 
       - name: Collect reports
-        shell: pwsh
+        shell: powershell
         run: |
           if (Test-Path reports) {
             Copy-Item reports -Destination artifacts/data_quality_analysis/reports -Recurse -Force
