@@ -1,0 +1,50 @@
+name: CI (self-hosted)
+
+on:
+  workflow_dispatch:
+
+env:
+  PYTHONUNBUFFERED: "1"
+
+jobs:
+  run-data-quality-local:
+    runs-on: [self-hosted, windows, x64]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Install dependencies
+        shell: pwsh
+        run: |
+          python -m pip install --upgrade pip
+          if (Test-Path requirements.txt) { pip install -r requirements.txt }
+
+      - name: Create artifact directory
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path artifacts/data_quality_analysis | Out-Null
+
+      - name: Run module on self-hosted runner
+        shell: pwsh
+        run: |
+          python src/data_quality_analysis.py > artifacts/data_quality_analysis/run.log 2>&1
+
+      - name: Collect reports
+        shell: pwsh
+        run: |
+          if (Test-Path reports) {
+            Copy-Item reports -Destination artifacts/data_quality_analysis/reports -Recurse -Force
+          }
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: artifacts-data_quality_analysis-selfhosted
+          path: artifacts/data_quality_analysis
