@@ -20,6 +20,14 @@ jobs:
           python --version
           pip --version
 
+      - name: Show workspace structure
+        shell: powershell
+        run: |
+          Write-Host "Workspace: $pwd"
+          Get-ChildItem .
+          if (Test-Path data) { Get-ChildItem data -Recurse }
+          if (Test-Path src) { Get-ChildItem src -Recurse }
+
       - name: Install dependencies
         shell: powershell
         run: |
@@ -34,16 +42,22 @@ jobs:
       - name: Run module on self-hosted runner
         shell: powershell
         run: |
-          python src/data_quality_analysis.py > artifacts/data_quality_analysis/run.log 2>&1
+          python src/data_quality_analysis.py
 
-      - name: Collect reports
+      - name: Save reports snapshot
+        if: always()
         shell: powershell
         run: |
           if (Test-Path reports) {
             Copy-Item reports -Destination artifacts/data_quality_analysis/reports -Recurse -Force
           }
+          if (Test-Path data/raw) {
+            New-Item -ItemType Directory -Force -Path artifacts/data_quality_analysis/data_raw_snapshot | Out-Null
+            Get-ChildItem data/raw | Out-File artifacts/data_quality_analysis/data_raw_snapshot/files.txt
+          }
 
       - name: Upload artifacts
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: artifacts-data_quality_analysis-selfhosted
