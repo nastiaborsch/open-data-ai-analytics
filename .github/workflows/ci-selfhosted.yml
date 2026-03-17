@@ -14,11 +14,11 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
-          cache: "pip"
+      - name: Check local Python
+        shell: pwsh
+        run: |
+          python --version
+          pip --version
 
       - name: Install dependencies
         shell: pwsh
