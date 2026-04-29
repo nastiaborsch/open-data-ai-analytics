@@ -1,0 +1,98 @@
+services:
+  db:
+    image: postgres:16
+    container_name: open_data_postgres
+    env_file:
+      - .env
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - app_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  data_load:
+    build:
+      context: ./data_load
+    container_name: data_load_service
+    env_file:
+      - .env
+    volumes:
+      - ./data:/app/data
+      - ./reports:/app/reports
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - app_network
+
+  data_quality_analysis:
+    build:
+      context: ./data_quality_analysis
+    container_name: data_quality_service
+    env_file:
+      - .env
+    volumes:
+      - ./reports:/app/reports
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - app_network
+
+  data_research:
+    build:
+      context: ./data_research
+    container_name: data_research_service
+    env_file:
+      - .env
+    volumes:
+      - ./reports:/app/reports
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - app_network
+
+  visualization:
+    build:
+      context: ./visualization
+    container_name: visualization_service
+    env_file:
+      - .env
+    volumes:
+      - ./reports:/app/reports
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - app_network
+
+  web:
+    build:
+      context: ./web
+    container_name: web_service
+    env_file:
+      - .env
+    ports:
+      - "${WEB_PORT}:5000"
+    volumes:
+      - ./reports:/app/reports
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - app_network
+
+networks:
+  app_network:
+
+volumes:
+  postgres_data:

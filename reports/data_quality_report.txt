@@ -1,0 +1,35 @@
+DATA QUALITY REPORT
+===================
+Loaded shape: (10000, 4)
+
+Dtypes:
+locationId              int64
+dateTime       datetime64[us]
+indicatorId               str
+value                   int64
+
+Missing values:
+locationId     0
+dateTime       0
+indicatorId    0
+value          0
+
+Duplicates:
+7
+
+Numeric stats:
+         locationId         value
+count  10000.000000  10000.000000
+mean    3876.673700    181.932700
+std       94.258217    179.091306
+min     3773.000000     52.000000
+25%     3773.000000    105.000000
+50%     3958.000000    126.000000
+75%     3963.000000    150.000000
+max     3968.000000    837.000000
+
+Additional checks:
+- Некоректних/non-numeric значень у 'value': 0
+- Некоректних дат у 'dateTime': 0
+- Кількість унікальних locationId: 15
+- Кількість унікальних indicatorId: 1

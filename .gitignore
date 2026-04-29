@@ -11,3 +11,4 @@ data/raw/
 
 *.pyc
 .DS_Store
+data/raw/

@@ -1,0 +1,8 @@
+DATA RESEARCH SUMMARY
+=====================
+Loaded rows: 10000
+Performed analyses:
+- indicatorId frequency analysis
+- top locations by number of records
+- daily aggregation for value
+- top 20 value records (potential anomalies)
