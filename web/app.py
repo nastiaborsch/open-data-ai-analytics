@@ -2,13 +2,33 @@ from pathlib import Path
 import os
 import time
 import pandas as pd
-from flask import Flask, render_template, send_from_directory
+from flask import Flask, render_template, send_from_directory, Response, request
+from prometheus_client import Counter, generate_latest, CONTENT_TYPE_LATEST
 from sqlalchemy import create_engine, text
 from dotenv import load_dotenv
 
 load_dotenv()
 
 app = Flask(__name__)
+
+REQUEST_COUNT = Counter(
+    "web_requests_total",
+    "Total number of HTTP requests to the web application",
+    ["method", "endpoint"]
+)
+
+
+@app.before_request
+def count_request():
+    REQUEST_COUNT.labels(
+        method=request.method,
+        endpoint=request.path
+    ).inc()
+
+
+@app.route("/metrics")
+def metrics():
+    return Response(generate_latest(), mimetype=CONTENT_TYPE_LATEST)
 
 REPORTS_DIR = Path("/app/reports")
 FIGURES_DIR = REPORTS_DIR / "figures"

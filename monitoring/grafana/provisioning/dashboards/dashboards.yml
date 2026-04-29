@@ -1,0 +1,11 @@
+apiVersion: 1
+
+providers:
+  - name: Open Data Monitoring
+    orgId: 1
+    folder: Open Data AI Analytics
+    type: file
+    disableDeletion: false
+    editable: true
+    options:
+      path: /var/lib/grafana/dashboards

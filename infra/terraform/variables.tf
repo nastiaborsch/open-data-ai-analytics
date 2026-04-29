@@ -32,3 +32,13 @@ variable "repo_url" {
   type    = string
   default = "https://github.com/nastiaborsch/open-data-ai-analytics.git"
 }
+
+variable "grafana_port" {
+  type    = number
+  default = 3000
+}
+
+variable "prometheus_port" {
+  type    = number
+  default = 9090
+}

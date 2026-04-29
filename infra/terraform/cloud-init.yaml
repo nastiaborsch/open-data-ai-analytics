@@ -47,8 +47,8 @@ write_files:
         cp data/raw/measurements_sample.csv data/measurements_sample.csv
       fi
 
-      docker compose up -d --build
-      docker compose ps > reports/docker_ps.txt
+      docker compose -f compose.yaml -f monitoring/docker-compose.monitoring.yml up -d --build
+      docker compose -f compose.yaml -f monitoring/docker-compose.monitoring.yml ps > reports/docker_ps.txt
 
 runcmd:
   - /usr/local/bin/deploy-open-data-app.sh

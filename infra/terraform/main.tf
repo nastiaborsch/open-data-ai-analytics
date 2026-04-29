@@ -68,6 +68,30 @@ resource "azurerm_network_security_group" "main" {
     source_address_prefix      = "*"
     destination_address_prefix = "*"
   }
+
+    security_rule {
+    name                       = "AllowGrafana"
+    priority                   = 1003
+    direction                  = "Inbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_port_range          = "*"
+    destination_port_range     = tostring(var.grafana_port)
+    source_address_prefix      = "*"
+    destination_address_prefix = "*"
+  }
+
+  security_rule {
+    name                       = "AllowPrometheus"
+    priority                   = 1004
+    direction                  = "Inbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_port_range          = "*"
+    destination_port_range     = tostring(var.prometheus_port)
+    source_address_prefix      = "*"
+    destination_address_prefix = "*"
+  }
 }
 
 resource "azurerm_network_interface" "main" {
