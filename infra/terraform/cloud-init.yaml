@@ -50,5 +50,25 @@ write_files:
       docker compose -f compose.yaml -f monitoring/docker-compose.monitoring.yml up -d --build
       docker compose -f compose.yaml -f monitoring/docker-compose.monitoring.yml ps > reports/docker_ps.txt
 
+            curl -sfL https://get.k3s.io | sh -
+
+      export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
+
+      mkdir -p /home/azureuser/.kube
+      cp /etc/rancher/k3s/k3s.yaml /home/azureuser/.kube/config
+      chown -R azureuser:azureuser /home/azureuser/.kube
+      chmod 600 /home/azureuser/.kube/config
+
+      kubectl get nodes
+
+      kubectl create namespace argocd --dry-run=client -o yaml | kubectl apply -f -
+      kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+
+      kubectl wait --for=condition=established --timeout=180s crd/applications.argoproj.io
+
+      kubectl patch svc argocd-server -n argocd -p '{"spec": {"type": "NodePort", "ports": [{"name": "http", "port": 80, "targetPort": 8080, "nodePort": 30090}, {"name": "https", "port": 443, "targetPort": 8080, "nodePort": 30443}]}}'
+
+      kubectl apply -f /opt/open-data-ai-analytics/gitops/argocd/application.yaml
+
 runcmd:
   - /usr/local/bin/deploy-open-data-app.sh

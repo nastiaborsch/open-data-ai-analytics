@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: open-data-web
+  namespace: open-data-app
+  labels:
+    app: open-data-web
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: open-data-web
+  template:
+    metadata:
+      labels:
+        app: open-data-web
+    spec:
+      containers:
+        - name: open-data-web
+          image: hashicorp/http-echo:0.2.3
+          args:
+            - "-text=Open Data AI Analytics | GitOps version 1"
+          ports:
+            - containerPort: 5678

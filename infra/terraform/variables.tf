@@ -42,3 +42,12 @@ variable "prometheus_port" {
   type    = number
   default = 9090
 }
+variable "argocd_port" {
+  type    = number
+  default = 30443
+}
+
+variable "k8s_web_port" {
+  type    = number
+  default = 30080
+}

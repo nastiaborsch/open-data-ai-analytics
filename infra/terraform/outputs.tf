@@ -17,3 +17,11 @@ output "grafana_url" {
 output "prometheus_url" {
   value = "http://${azurerm_public_ip.main.ip_address}:${var.prometheus_port}"
 }
+
+output "argocd_url" {
+  value = "https://${azurerm_public_ip.main.ip_address}:${var.argocd_port}"
+}
+
+output "k8s_web_url" {
+  value = "http://${azurerm_public_ip.main.ip_address}:${var.k8s_web_port}"
+}
