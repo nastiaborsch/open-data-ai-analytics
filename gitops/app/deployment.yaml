@@ -6,7 +6,7 @@ metadata:
   labels:
     app: open-data-web
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       app: open-data-web
@@ -19,6 +19,6 @@ spec:
         - name: open-data-web
           image: hashicorp/http-echo:0.2.3
           args:
-            - "-text=Open Data AI Analytics | GitOps version 1"
+            - "-text=Open Data AI Analytics | GitOps version 2 - updated from GitHub"
           ports:
             - containerPort: 5678
